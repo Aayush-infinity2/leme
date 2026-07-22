@@ -24,4 +24,3 @@ Complete one private card per source and one public-safe card per derived manife
 
 - Split algorithm, leakage checks, locked-set owner
 - Intended tasks, excluded tasks, baseline metrics/slices, known failure modes
-

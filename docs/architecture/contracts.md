@@ -55,4 +55,3 @@ The policy service returns `APPROVE`, `REVIEW`, or `REJECT`, plus a calibrated c
 - Layout extraction emits fields with source spans, normalized values, confidence, and provenance. It must not overwrite raw OCR.
 - Face verification emits only similarity score, calibrated probability, threshold version, quality/liveness gates, and optional encrypted embedding URI restricted to the biometric service.
 - Forgery analysis emits a calibrated image-level score, attack taxonomy probabilities, heatmap URI, and model version. A heatmap is explanatory evidence, not proof of manipulation.
-

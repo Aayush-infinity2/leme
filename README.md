@@ -18,4 +18,3 @@ Read the Phase 1 design before running or extending this repository:
 - Raw PII and biometric media are isolated, encrypted, access-controlled, and deletion-aware.
 - Deterministic policy checks remain distinct from probabilistic ML signals.
 - Every inference is model-versioned, traceable, and reproducible.
-

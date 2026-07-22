@@ -9,4 +9,3 @@
 | ADR-005 | Treat model registry promotion as a release artifact with offline evaluation gates | Accepted |
 
 Each future consequential choice must be recorded as an ADR before implementation changes the interface, privacy boundary, or operational model.
-
