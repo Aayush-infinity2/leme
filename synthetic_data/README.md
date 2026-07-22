@@ -9,3 +9,9 @@ python synthetic_data/generate_layout_dataset.py --output-dir /content/verivisio
 ```
 
 Never modify it to reproduce government-issued credentials, official logos, valid document-number formats, real identities, or security features.
+
+Run the Phase 4 pipeline validation on a supported GPU runtime:
+
+```text
+python layout_understanding/train_layoutlmv3.py --manifest /content/verivision-data/synthetic-layout-v1/manifest.jsonl --output-dir /content/verivision-runs/layoutlmv3-synthetic-v1 --epochs 3
+```
