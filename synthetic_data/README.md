@@ -1,6 +1,6 @@
 # First-party synthetic research data
 
-`generate_layout_dataset.py` renders fictitious VeriVision research credentials, visibly marked `SAMPLE / NOT VALID FOR IDENTIFICATION`. It emits image files plus token quadrilaterals and BIOES entity labels for LayoutLMv3 experiments. Five template families and three contrast conditions are generated; the training script holds out whole template families.
+`generate_layout_dataset.py` renders fictitious VeriVision research credentials, visibly marked `SAMPLE / NOT VALID FOR IDENTIFICATION`. It emits image files plus token quadrilaterals and BIOES entity labels for LayoutLMv3 experiments. It uses two independent visual renderer families, five layout templates, and three contrast conditions; the training script holds out whole template families.
 
 Example:
 

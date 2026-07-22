@@ -48,18 +48,28 @@ def render(index: int, output: Path, font_file: str, rng: random.Random) -> dict
     name = " ".join(rng.choice(NAMES))
     document_number = f"VV-{rng.randrange(1000, 9999)}-{rng.randrange(1000, 9999)}"
     template = TEMPLATES[index % len(TEMPLATES)]
+    renderer_family = "credential_v1" if (index // len(TEMPLATES)) % 2 == 0 else "minimal_record_v1"
     capture_name, contrast = CAPTURES[(index // len(TEMPLATES)) % len(CAPTURES)]
     image = Image.new("RGB", (1024, 640), "#f8fafc")
     draw = ImageDraw.Draw(image)
     title_font = ImageFont.truetype(font_file, 42)
     font = ImageFont.truetype(font_file, 29)
     label_font = ImageFont.truetype(font_file, 20)
-    draw.rounded_rectangle((40, 40, 984, 600), radius=28, fill="white", outline=template["accent"], width=4)
-    draw.text((80, 75), "VERIVISION RESEARCH CREDENTIAL", font=title_font, fill=template["accent"])
-    draw.text((80, 135), "SAMPLE / NOT VALID FOR IDENTIFICATION", font=label_font, fill="#b91c1c")
-    draw.ellipse((730, 180, 900, 350), fill="#dbeafe", outline="#60a5fa", width=4)
-    draw.ellipse((790, 215, 840, 265), fill="#93c5fd")
-    draw.rounded_rectangle((760, 275, 870, 335), radius=20, fill="#93c5fd")
+    if renderer_family == "credential_v1":
+        draw.rounded_rectangle((40, 40, 984, 600), radius=28, fill="white", outline=template["accent"], width=4)
+        draw.text((80, 75), "VERIVISION RESEARCH CREDENTIAL", font=title_font, fill=template["accent"])
+        draw.text((80, 135), "SAMPLE / NOT VALID FOR IDENTIFICATION", font=label_font, fill="#b91c1c")
+        draw.ellipse((730, 180, 900, 350), fill="#dbeafe", outline="#60a5fa", width=4)
+        draw.ellipse((790, 215, 840, 265), fill="#93c5fd")
+        draw.rounded_rectangle((760, 275, 870, 335), radius=20, fill="#93c5fd")
+    else:
+        image.paste("#eef2ff", (0, 0, 1024, 640))
+        draw.rectangle((30, 30, 994, 610), fill="white", outline="#111827", width=3)
+        draw.rectangle((30, 30, 994, 150), fill=template["accent"])
+        draw.text((70, 65), "VERIVISION SYNTHETIC RESEARCH RECORD", font=font, fill="white")
+        draw.text((70, 170), "SAMPLE / NOT VALID FOR IDENTIFICATION", font=label_font, fill="#b91c1c")
+        draw.rectangle((760, 210, 910, 360), fill="#e5e7eb", outline="#64748b", width=3)
+        draw.text((785, 275), "SYNTH", font=label_font, fill="#475569")
     tokens = []
     fields = [("FULL NAME", name, "PERSON_NAME"), ("RESEARCH DOCUMENT NUMBER", document_number, "DOCUMENT_NUMBER"), ("DATE OF BIRTH", "1994-06-15", "DATE_OF_BIRTH")]
     for (label, value, entity), (x, y) in zip(fields, template["positions"]):
@@ -69,7 +79,7 @@ def render(index: int, output: Path, font_file: str, rng: random.Random) -> dict
         image = ImageEnhance.Contrast(image).enhance(contrast)
     path = output / f"synthetic_id_{index:05d}.png"
     image.save(path)
-    return {"sample_id": f"synthetic-id-{index:05d}", "image_path": str(path), "document_class": "verivision_research_credential", "template_family": template["name"], "capture_condition": capture_name, "tokens": tokens, "license_class": "first_party", "consent_class": "no_personal_data"}
+    return {"sample_id": f"synthetic-id-{index:05d}", "image_path": str(path), "document_class": "verivision_research_credential", "template_family": f"{renderer_family}__{template['name']}", "renderer_family": renderer_family, "capture_condition": capture_name, "tokens": tokens, "license_class": "first_party", "consent_class": "no_personal_data"}
 
 
 def main() -> None:
