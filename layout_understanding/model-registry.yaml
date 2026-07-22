@@ -1,0 +1,17 @@
+registry_version: 1
+models:
+  - id: layoutlmv3_base
+    role: primary_token_classification_and_document_classification
+    upstream: https://github.com/microsoft/unilm/tree/master/layoutlmv3
+    input_contract: ocr_tokens_plus_quadrilaterals_plus_rgb_page
+    status: candidate_baseline
+  - id: donut_json_extractor
+    role: constrained_ocr_free_extraction_comparator
+    upstream: https://github.com/clovaai/donut
+    input_contract: rgb_page_plus_json_schema
+    status: research_candidate
+  - id: docformer
+    role: multimodal_ablation
+    upstream: https://arxiv.org/abs/2106.11539
+    input_contract: ocr_tokens_plus_geometry_plus_pixels
+    status: reproduction_required

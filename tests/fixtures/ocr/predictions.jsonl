@@ -1,0 +1,2 @@
+{"sample_id":"ocr-field-001","reference":"AB-01","prediction":"AB-01","field_type":"document_number"}
+{"sample_id":"ocr-field-002","reference":"Jane Doe","prediction":"Jane Doe","field_type":"name"}

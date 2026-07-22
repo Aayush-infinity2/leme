@@ -1,0 +1,49 @@
+{
+  "experiment_id": "phase03-ppocrv5-t4-smoke-20260722",
+  "status": "passed",
+  "scope": "GPU runtime and OCR smoke test; not a locked-set accuracy benchmark",
+  "runtime": {
+    "platform": "Google Colab",
+    "gpu": "Tesla T4",
+    "gpu_memory_gb": 15,
+    "python": "3.12.13",
+    "paddle": "3.1.1",
+    "paddleocr": "3.7.0",
+    "torch": "2.13.0+cu126"
+  },
+  "model": {
+    "ocr_version": "PP-OCRv5",
+    "detector": "PP-OCRv5_server_det",
+    "recognizer": "en_PP-OCRv5_mobile_rec",
+    "device": "gpu:0",
+    "document_orientation_classifier": false,
+    "document_unwarping": false,
+    "textline_orientation_classifier": false
+  },
+  "input": {
+    "kind": "first_party_synthetic_text_image",
+    "contains_pii": false,
+    "expected_lines": [
+      "VERIVISION OCR TEST",
+      "DOCUMENT NUMBER: SAMPLE-AB01-2026",
+      "NAME: TEST USER"
+    ]
+  },
+  "output": {
+    "recognized_lines": [
+      "VERIVISION OCR TEST",
+      "DOCUMENT",
+      "NUMBER: SAMPLE-AB01-2026",
+      "NAME: TEST USER"
+    ],
+    "recognition_confidence_observed_range": [0.99775738, 0.99951655],
+    "observation": "All expected content was recognized. Detector reading order separated the document-number label from its value; Phase 4 relation resolution must support this layout."
+  },
+  "latency_ms": {
+    "warm_runs": 10,
+    "initialization_and_model_download_excluded": true,
+    "p50": 188.5,
+    "p95": 220.8
+  },
+  "next_gate": "Run the same pinned model on an approved, manifest-backed locked benchmark with source/template/capture slices, memory telemetry, CER/WER, and calibration."
+}

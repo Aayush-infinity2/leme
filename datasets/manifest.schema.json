@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "VeriVision Canonical Dataset Manifest Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["sample_id", "source_id", "source_sample_id", "media_uri", "sha256", "split", "license_class", "consent_class", "annotation_version"],
+  "properties": {
+    "sample_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{2,127}$"},
+    "source_id": {"type": "string", "pattern": "^[a-z0-9][a-z0-9_-]{2,63}$"},
+    "source_sample_id": {"type": "string", "minLength": 1},
+    "media_uri": {"type": "string", "pattern": "^(s3|file|gs)://"},
+    "sha256": {"type": "string", "pattern": "^[A-Fa-f0-9]{64}$"},
+    "split": {"enum": ["train", "validation", "test_locked", "challenge_locked", "holdout_domain"]},
+    "license_class": {"enum": ["production_approved", "research_only", "benchmark_only", "first_party", "pending"]},
+    "consent_class": {"enum": ["no_personal_data", "mock_or_synthetic", "consented", "restricted_research", "unknown"]},
+    "annotation_version": {"type": "string", "minLength": 1},
+    "document_family": {"type": "string"},
+    "template_family": {"type": "string"},
+    "capture_channel": {"type": "string"},
+    "language_scripts": {"type": "array", "items": {"type": "string"}, "uniqueItems": true},
+    "lineage": {"type": "array", "items": {"type": "string"}}
+  }
+}

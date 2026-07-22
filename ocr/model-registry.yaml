@@ -1,0 +1,32 @@
+registry_version: 1
+models:
+  - id: paddle_pp_ocrv5
+    role: primary_geometry_preserving_ocr
+    upstream: https://github.com/PaddlePaddle/PaddleOCR
+    runtime: PaddleOCR 3.x
+    release_policy: pin_container_and_model_digest
+    status: candidate_baseline
+  - id: trocr_field_specialist
+    role: cropped_field_recognition_research
+    upstream: https://huggingface.co/docs/transformers/model_doc/trocr
+    runtime: transformers
+    release_policy: fine_tune_only_after_slice_error_analysis
+    status: research_candidate
+  - id: donut_structured_extractor
+    role: ocr_free_structured_extraction_comparator
+    upstream: https://github.com/clovaai/donut
+    runtime: transformers
+    release_policy: cannot_replace_token_provenance
+    status: research_candidate
+  - id: nougat
+    role: academic_pdf_parser_negative_control
+    upstream: https://github.com/facebookresearch/nougat
+    runtime: nougat-ocr
+    release_policy: not_for_identity_document_primary_ocr
+    status: excluded_from_primary_path
+  - id: ocrformer
+    role: literature_comparator
+    upstream: paper_reproduction_required
+    runtime: research_only
+    release_policy: require_reproducible_upstream_before_adoption
+    status: deferred

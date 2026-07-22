@@ -1,0 +1,24 @@
+model:
+  base_model: microsoft/layoutlmv3-base
+  task: token_classification
+  label_scheme: BIOES
+  max_tokens: 512
+  image_size: 224
+data:
+  canonical_manifest: s3://REPLACE_WITH_APPROVED_MANIFEST
+  split_policy: template_and_capture_disjoint
+  ocr_release_digest: REPLACE_WITH_PINNED_OCR_RELEASE
+  source_allowlist: [verivision_synthetic_ids]
+optimization:
+  precision: bf16_or_fp16_after_numerical_check
+  learning_rate: 1.0e-5
+  weight_decay: 0.01
+  warmup_ratio: 0.1
+  gradient_accumulation_steps: 8
+evaluation:
+  metrics: [entity_micro_f1, entity_macro_f1, field_exact_match, document_class_accuracy]
+  locked_splits: [test_locked, challenge_locked, holdout_domain]
+release:
+  require_model_digest: true
+  require_calibration: true
+  require_slice_report: true

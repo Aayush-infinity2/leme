@@ -1,0 +1,1 @@
+{"sample_id":"synthetic-id-0001","source_id":"verivision_synthetic_ids","source_sample_id":"seed-42","media_uri":"s3://verivision-quarantine/synthetic-id-0001.png","sha256":"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa","split":"train","license_class":"first_party","consent_class":"no_personal_data","annotation_version":"1.0.0"}

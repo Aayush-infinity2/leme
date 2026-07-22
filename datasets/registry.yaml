@@ -1,0 +1,53 @@
+registry_version: 1
+policy:
+  raw_data_in_git: forbidden
+  public_mirrors: forbidden
+  license_snapshot_required: true
+  source_checksum_required: true
+  research_only_firewall: true
+sources:
+  - id: midv_2020
+    official_url: https://l3i-share.univ-lr.fr/MIDV2020/midv2020.html
+    modality: [document_image, document_video, synthetic_face]
+    tasks: [document_detection, rectification, ocr, field_extraction, face_detection]
+    intended_use: benchmark_and_research
+    use_class: pending_terms_review
+    pii_class: mock_identity_data
+    acquisition: manual_official_download
+    status: not_acquired
+  - id: midv_500
+    official_url: https://arxiv.org/abs/1807.05786
+    modality: [document_video]
+    tasks: [document_detection, rectification, ocr_robustness]
+    intended_use: benchmark_only
+    use_class: pending_terms_review
+    pii_class: public_or_licensed_source_documents
+    acquisition: manual_official_download
+    status: not_acquired
+  - id: cord
+    official_url: https://github.com/clovaai/cord
+    modality: [receipt_image, layout_annotation]
+    tasks: [key_information_extraction, receipt_parsing]
+    intended_use: research_and_evaluation
+    use_class: pending_terms_review
+    pii_class: unknown_until_card_review
+    acquisition: manual_official_download
+    status: not_acquired
+  - id: faceforensics_pp
+    official_url: https://github.com/ondyari/FaceForensics
+    modality: [face_video, manipulation_label]
+    tasks: [presentation_attack_research]
+    intended_use: research_benchmark_only
+    use_class: research_only_pending_terms_review
+    pii_class: biometric
+    acquisition: application_then_official_download
+    status: not_acquired
+  - id: verivision_synthetic_ids
+    official_url: internal://verivision/synthetic-ids
+    modality: [synthetic_document, synthetic_portrait, tamper_mask]
+    tasks: [all_document_tasks, document_forgery]
+    intended_use: research_and_production_candidate
+    use_class: first_party_pending_template_review
+    pii_class: no_real_personal_data
+    acquisition: generated_after_approval
+    status: not_generated

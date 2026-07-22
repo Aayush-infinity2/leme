@@ -1,0 +1,42 @@
+# Python and test output
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+coverage.xml
+htmlcov/
+
+# Environments and local configuration
+.venv/
+venv/
+.env
+.env.*
+!.env.example
+
+# ML artefacts and data — manifests/configurations only may be committed
+data/
+artifacts/
+mlruns/
+wandb/
+checkpoints/
+*.ckpt
+*.onnx
+*.engine
+*.safetensors
+*.pt
+*.pth
+
+# Sensitive uploads and generated evidence
+uploads/
+evidence/
+*.pem
+*.key
+secrets/
+
+# Editors and OS
+.vscode/
+.idea/
+Thumbs.db
+.DS_Store

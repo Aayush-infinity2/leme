@@ -1,0 +1,1 @@
+{"sample_id":"layout-001","reference_document_class":"synthetic_id","predicted_document_class":"synthetic_id","reference_entities":[{"label":"DOCUMENT_NUMBER","normalized_value":"AB01"},{"label":"PERSON_NAME","normalized_value":"JANE DOE"}],"predicted_entities":[{"label":"DOCUMENT_NUMBER","normalized_value":"AB01"},{"label":"PERSON_NAME","normalized_value":"JANE DOE"}]}
