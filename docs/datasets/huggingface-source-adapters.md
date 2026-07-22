@@ -16,3 +16,12 @@ The adapters export approved public source data into source-preserving JSONL man
 python datasets/adapters/hf_document_sources.py --source funsd --output-dir /content/verivision-external --acknowledge-source-terms
 python datasets/adapters/hf_document_sources.py --source cord_v2 --output-dir /content/verivision-external --acknowledge-source-terms
 ```
+
+## Native-label transfer experiments
+
+Train each source separately; do not map FUNSD `QUESTION/ANSWER/HEADER` or CORD receipt categories into identity fields.
+
+```text
+python layout_understanding/train_source_layoutlmv3.py --source funsd --manifest-dir /content/verivision-external/manifests --output-dir /content/verivision-runs/layoutlmv3-funsd --epochs 3
+python layout_understanding/train_source_layoutlmv3.py --source cord_v2 --manifest-dir /content/verivision-external/manifests --output-dir /content/verivision-runs/layoutlmv3-cord-v2 --epochs 3
+```
