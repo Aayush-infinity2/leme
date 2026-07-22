@@ -16,6 +16,7 @@ import torch
 from PIL import Image
 from torch.utils.data import Dataset
 from transformers import LayoutLMv3ForTokenClassification, LayoutLMv3Processor, Trainer, TrainingArguments, default_data_collator
+from seqeval.metrics import f1_score, precision_score, recall_score
 
 LABELS = ["O", "B-PERSON_NAME", "I-PERSON_NAME", "E-PERSON_NAME", "S-PERSON_NAME", "B-DOCUMENT_NUMBER", "I-DOCUMENT_NUMBER", "E-DOCUMENT_NUMBER", "S-DOCUMENT_NUMBER", "B-DATE_OF_BIRTH", "I-DATE_OF_BIRTH", "E-DATE_OF_BIRTH", "S-DATE_OF_BIRTH"]
 LABEL_TO_ID = {label: index for index, label in enumerate(LABELS)}
@@ -53,20 +54,32 @@ def main():
     rows = [json.loads(line) for line in args.manifest.read_text(encoding="utf-8").splitlines() if line.strip()]
     if len(rows) < 20:
         raise ValueError("at least 20 samples are required for deterministic train/validation/test splits")
-    random.Random(args.seed).shuffle(rows)
-    validation_size = max(1, round(len(rows) * 0.1))
-    test_size = max(1, round(len(rows) * 0.1))
-    train_rows, validation_rows, test_rows = rows[: -validation_size - test_size], rows[-validation_size - test_size : -test_size], rows[-test_size:]
+    families = sorted({row.get("template_family", "unknown") for row in rows})
+    if len(families) < 3:
+        raise ValueError("at least three template families are required for template-disjoint evaluation")
+    train_families, validation_family, test_family = families[:-2], families[-2], families[-1]
+    train_rows = [row for row in rows if row.get("template_family") in train_families]
+    validation_rows = [row for row in rows if row.get("template_family") == validation_family]
+    test_rows = [row for row in rows if row.get("template_family") == test_family]
     processor = LayoutLMv3Processor.from_pretrained("microsoft/layoutlmv3-base", apply_ocr=False)
     model = LayoutLMv3ForTokenClassification.from_pretrained("microsoft/layoutlmv3-base", num_labels=len(LABELS), id2label=dict(enumerate(LABELS)), label2id=LABEL_TO_ID, ignore_mismatched_sizes=True)
-    run_metadata = {"manifest": str(args.manifest), "samples": len(rows), "splits": {"train": len(train_rows), "validation": len(validation_rows), "test": len(test_rows)}, "seed": args.seed, "labels": LABELS, "scope_warning": "Synthetic single-template pipeline validation only; not a generalization benchmark."}
+    run_metadata = {"manifest": str(args.manifest), "samples": len(rows), "splits": {"train": len(train_rows), "validation": len(validation_rows), "test": len(test_rows)}, "template_split": {"train": train_families, "validation": validation_family, "test": test_family}, "seed": args.seed, "labels": LABELS, "scope_warning": "Synthetic multi-template transfer experiment only; not a real-document benchmark."}
     args.output_dir.mkdir(parents=True, exist_ok=True)
     (args.output_dir / "run_metadata.json").write_text(json.dumps(run_metadata, indent=2) + "\n", encoding="utf-8")
     # LayoutLMv3ForTokenClassification does not implement gradient checkpointing
     # in the installed Transformers runtime. Batch size 1 plus accumulation keeps
     # the T4 run memory-safe without enabling an unsupported model feature.
     training_args = TrainingArguments(output_dir=str(args.output_dir), learning_rate=1e-5, per_device_train_batch_size=1, per_device_eval_batch_size=1, gradient_accumulation_steps=8, num_train_epochs=args.epochs, fp16=torch.cuda.is_available(), eval_strategy="epoch", save_strategy="epoch", load_best_model_at_end=True, metric_for_best_model="eval_loss", greater_is_better=False, save_total_limit=2, logging_steps=10, report_to="none", seed=args.seed)
-    trainer = Trainer(model=model, args=training_args, train_dataset=ManifestDataset(train_rows, processor), eval_dataset=ManifestDataset(validation_rows, processor), data_collator=default_data_collator, processing_class=processor)
+    def compute_metrics(prediction):
+        logits, labels = prediction
+        predicted = np.argmax(logits, axis=-1)
+        true_sequences, predicted_sequences = [], []
+        for expected, actual in zip(labels, predicted):
+            keep = expected != -100
+            true_sequences.append([LABELS[index] for index in expected[keep]])
+            predicted_sequences.append([LABELS[index] for index in actual[keep]])
+        return {"entity_precision": precision_score(true_sequences, predicted_sequences), "entity_recall": recall_score(true_sequences, predicted_sequences), "entity_f1": f1_score(true_sequences, predicted_sequences)}
+    trainer = Trainer(model=model, args=training_args, train_dataset=ManifestDataset(train_rows, processor), eval_dataset=ManifestDataset(validation_rows, processor), data_collator=default_data_collator, processing_class=processor, compute_metrics=compute_metrics)
     trainer.train()
     metrics = trainer.evaluate(ManifestDataset(test_rows, processor), metric_key_prefix="test")
     trainer.save_model()

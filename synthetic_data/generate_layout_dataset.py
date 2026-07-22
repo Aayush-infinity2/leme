@@ -34,27 +34,42 @@ def add_field(draw, font, label_font, x, y, label, value, entity, tokens):
         cursor = right + draw.textlength(" ", font=font)
 
 
+TEMPLATES = [
+    {"name": "blue_left", "accent": "#1d4ed8", "positions": [(80, 210), (80, 330), (80, 450)]},
+    {"name": "green_compact", "accent": "#047857", "positions": [(80, 195), (80, 305), (80, 415)]},
+    {"name": "violet_right", "accent": "#6d28d9", "positions": [(480, 210), (480, 330), (480, 450)]},
+    {"name": "amber_spread", "accent": "#b45309", "positions": [(80, 205), (80, 365), (480, 365)]},
+    {"name": "slate_bottom", "accent": "#334155", "positions": [(80, 205), (470, 205), (80, 435)]},
+]
+CAPTURES = [("clean", 1.0), ("low_contrast", 0.72), ("high_contrast", 1.25)]
+
+
 def render(index: int, output: Path, font_file: str, rng: random.Random) -> dict:
     name = " ".join(rng.choice(NAMES))
     document_number = f"VV-{rng.randrange(1000, 9999)}-{rng.randrange(1000, 9999)}"
+    template = TEMPLATES[index % len(TEMPLATES)]
+    capture_name, contrast = CAPTURES[(index // len(TEMPLATES)) % len(CAPTURES)]
     image = Image.new("RGB", (1024, 640), "#f8fafc")
     draw = ImageDraw.Draw(image)
     title_font = ImageFont.truetype(font_file, 42)
     font = ImageFont.truetype(font_file, 29)
     label_font = ImageFont.truetype(font_file, 20)
-    draw.rounded_rectangle((40, 40, 984, 600), radius=28, fill="white", outline="#93c5fd", width=4)
-    draw.text((80, 75), "VERIVISION RESEARCH CREDENTIAL", font=title_font, fill="#1d4ed8")
+    draw.rounded_rectangle((40, 40, 984, 600), radius=28, fill="white", outline=template["accent"], width=4)
+    draw.text((80, 75), "VERIVISION RESEARCH CREDENTIAL", font=title_font, fill=template["accent"])
     draw.text((80, 135), "SAMPLE / NOT VALID FOR IDENTIFICATION", font=label_font, fill="#b91c1c")
     draw.ellipse((730, 180, 900, 350), fill="#dbeafe", outline="#60a5fa", width=4)
     draw.ellipse((790, 215, 840, 265), fill="#93c5fd")
     draw.rounded_rectangle((760, 275, 870, 335), radius=20, fill="#93c5fd")
     tokens = []
-    add_field(draw, font, label_font, 80, 210, "FULL NAME", name, "PERSON_NAME", tokens)
-    add_field(draw, font, label_font, 80, 330, "RESEARCH DOCUMENT NUMBER", document_number, "DOCUMENT_NUMBER", tokens)
-    add_field(draw, font, label_font, 80, 450, "DATE OF BIRTH", "1994-06-15", "DATE_OF_BIRTH", tokens)
+    fields = [("FULL NAME", name, "PERSON_NAME"), ("RESEARCH DOCUMENT NUMBER", document_number, "DOCUMENT_NUMBER"), ("DATE OF BIRTH", "1994-06-15", "DATE_OF_BIRTH")]
+    for (label, value, entity), (x, y) in zip(fields, template["positions"]):
+        add_field(draw, font, label_font, x, y, label, value, entity, tokens)
+    if contrast != 1.0:
+        from PIL import ImageEnhance
+        image = ImageEnhance.Contrast(image).enhance(contrast)
     path = output / f"synthetic_id_{index:05d}.png"
     image.save(path)
-    return {"sample_id": f"synthetic-id-{index:05d}", "image_path": str(path), "document_class": "verivision_research_credential", "tokens": tokens, "license_class": "first_party", "consent_class": "no_personal_data"}
+    return {"sample_id": f"synthetic-id-{index:05d}", "image_path": str(path), "document_class": "verivision_research_credential", "template_family": template["name"], "capture_condition": capture_name, "tokens": tokens, "license_class": "first_party", "consent_class": "no_personal_data"}
 
 
 def main() -> None:
