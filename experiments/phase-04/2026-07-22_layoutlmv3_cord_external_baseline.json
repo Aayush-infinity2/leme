@@ -1,0 +1,11 @@
+{
+  "experiment_id": "phase04-layoutlmv3-cord-external-baseline-20260722",
+  "status": "completed_baseline",
+  "scope": "Research-only external receipt extraction baseline; not identity-document evaluation.",
+  "source": {"id": "naver-clova-ix/cord-v2", "license_class": "research_only", "bbox_space": "pixel_to_normalized_1000", "splits": {"train": 800, "validation": 100, "official_test": 100}},
+  "model": {"base_model": "microsoft/layoutlmv3-base", "task": "native-label receipt token classification", "label_count": 54, "epochs": 3},
+  "results": {"test_loss": 1.2001363039016724, "entity_precision": 0.6261682242990654, "entity_recall": 0.7165775401069518, "entity_f1": 0.6683291770573566, "test_runtime_seconds": 13.1323, "test_samples_per_second": 7.615},
+  "interpretation": "The source-isolated CORD receipt baseline is materially stronger than the FUNSD form baseline but evaluates a different label space and domain. Scores must not be compared as identity-verification accuracy.",
+  "data_quality_fix": "CORD quadrilaterals are clamped and ordered after pixel-to-0..1000 normalization before LayoutLMv3 spatial embedding lookup.",
+  "next_gate": "Complete approved identity-document external evaluation and field-level/cross-source calibration before declaring Phase 4 production-ready."
+}
