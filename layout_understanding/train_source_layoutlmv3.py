@@ -19,6 +19,13 @@ def read_jsonl(path: Path):
     return [json.loads(line) for line in path.read_text(encoding="utf-8").splitlines() if line.strip()]
 
 
+def normalize_bbox(box, width, height, bbox_space):
+    if bbox_space == "pixel":
+        box = [round(box[0] * 1000 / width), round(box[1] * 1000 / height), round(box[2] * 1000 / width), round(box[3] * 1000 / height)]
+    x0, y0, x1, y1 = (max(0, min(1000, int(value))) for value in box)
+    return [min(x0, x1), min(y0, y1), max(x0, x1), max(y0, y1)]
+
+
 class SourceDataset(Dataset):
     def __init__(self, rows, processor, label_to_id, bbox_space):
         self.rows, self.processor, self.label_to_id, self.bbox_space = rows, processor, label_to_id, bbox_space
@@ -29,10 +36,9 @@ class SourceDataset(Dataset):
         row = self.rows[index]
         image = Image.open(Path(row["media_uri"].replace("file://", ""))).convert("RGB")
         words = [token["text"] for token in row["tokens"]]
-        if self.bbox_space == "pixel":
-            boxes = [[round(box[0] * 1000 / image.width), round(box[1] * 1000 / image.height), round(box[2] * 1000 / image.width), round(box[3] * 1000 / image.height)] for box in (token["bbox"] for token in row["tokens"])]
-        else:
-            boxes = [token["bbox"] for token in row["tokens"]]
+        boxes = [normalize_bbox(token["bbox"], image.width, image.height, self.bbox_space) for token in row["tokens"]]
+        if any(not (0 <= x0 <= x1 <= 1000 and 0 <= y0 <= y1 <= 1000) for x0, y0, x1, y1 in boxes):
+            raise ValueError(f"invalid normalized bounding box in {row['sample_id']}")
         labels = [self.label_to_id[token["source_label"]] for token in row["tokens"]]
         encoded = self.processor(image, text=words, boxes=boxes, word_labels=labels, truncation=True, padding="max_length", max_length=512, return_tensors="pt")
         return {name: value.squeeze(0) for name, value in encoded.items()}
