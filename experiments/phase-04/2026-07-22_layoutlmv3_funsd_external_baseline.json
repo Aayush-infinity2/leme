@@ -1,0 +1,10 @@
+{
+  "experiment_id": "phase04-layoutlmv3-funsd-external-baseline-20260722",
+  "status": "completed_baseline",
+  "scope": "Research-only external form-understanding transfer baseline; not identity-document evaluation.",
+  "source": {"id": "nielsr/funsd", "license_class": "research_only", "bbox_space": "normalized_1000", "splits": {"train": 134, "validation": 15, "official_test": 50}},
+  "model": {"base_model": "microsoft/layoutlmv3-base", "task": "native-label token classification", "labels": ["B-ANSWER", "B-HEADER", "B-QUESTION", "I-ANSWER", "I-HEADER", "I-QUESTION", "O"], "epochs": 3},
+  "results": {"test_loss": 1.2924714088439941, "entity_precision": 0.2581628210709621, "entity_recall": 0.3005575266092245, "entity_f1": 0.277751756440281, "test_runtime_seconds": 3.7587, "test_samples_per_second": 13.302},
+  "interpretation": "This low external F1 is the baseline, not a failure to conceal. It reflects the small training split and validates that synthetic-only results do not estimate real-form generalization.",
+  "next_experiments": ["run the source-isolated CORD receipt experiment", "analyze FUNSD error slices and improve only with validation-selected changes", "do not transfer FUNSD labels into identity-field training"]
+}
