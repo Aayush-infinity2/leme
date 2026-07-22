@@ -47,7 +47,16 @@ def export_cord(output: Path) -> None:
             sample_id = f"cord-v2-{split}-{index:05d}"
             image_path = image_dir / f"{sample_id}.png"
             row["image"].convert("RGB").save(image_path)
-            records.append({"sample_id": sample_id, "source_id": "naver_clova_ix_cord_v2", "source_sample_id": str(index), "media_uri": image_path.resolve().as_uri(), "document_family": "receipt", "task_eligibility": ["schema_supervision", "donut_comparator", "receipt_extraction_evaluation"], "ground_truth": row["ground_truth"], "excluded_from": ["layoutlm_token_classification"], "exclusion_reason": "Hub representation has no source OCR words or bounding boxes.", "split": split, "license_class": "research_only", "consent_class": "restricted_research", "annotation_version": "hf-naver-clova-ix-cord-v2"})
+            annotation = json.loads(row["ground_truth"])
+            tokens = []
+            for line in annotation.get("valid_line", []):
+                category = line["category"]
+                for word_index, word in enumerate(line["words"]):
+                    quad = word["quad"]
+                    xs = [quad["x1"], quad["x2"], quad["x3"], quad["x4"]]
+                    ys = [quad["y1"], quad["y2"], quad["y3"], quad["y4"]]
+                    tokens.append({"text": word["text"], "bbox": [min(xs), min(ys), max(xs), max(ys)], "source_label": ("B-" if word_index == 0 else "I-") + category, "is_key": bool(word.get("is_key", 0)), "group_id": line.get("group_id"), "sub_group_id": line.get("sub_group_id")})
+            records.append({"sample_id": sample_id, "source_id": "naver_clova_ix_cord_v2", "source_sample_id": str(index), "media_uri": image_path.resolve().as_uri(), "document_family": "receipt", "task_eligibility": ["layoutlm_token_classification", "schema_supervision", "donut_comparator", "receipt_extraction_evaluation"], "tokens": tokens, "ground_truth": row["ground_truth"], "split": split, "license_class": "research_only", "consent_class": "restricted_research", "annotation_version": "hf-naver-clova-ix-cord-v2"})
         write_jsonl(output / "manifests" / f"cord_v2_{split}.jsonl", records)
 
 

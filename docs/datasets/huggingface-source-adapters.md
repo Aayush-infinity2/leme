@@ -8,7 +8,7 @@ The adapters export approved public source data into source-preserving JSONL man
 
 ## CORD v2
 
-`naver-clova-ix/cord-v2` supplies receipt images and JSON ground-truth structures. Its Hub form does not expose OCR word boxes, so it is not eligible for OCR-dependent LayoutLM training. Use it for schema-supervision, Donut comparison, and receipt extraction evaluation.
+`naver-clova-ix/cord-v2` supplies receipt images, JSON ground-truth structures, and `valid_line` word quadrilaterals with hierarchical categories. The adapter exports BIO-tagged receipt tokens for LayoutLM token classification while retaining the full JSON target for schema-supervision and Donut comparison. Its receipt label space remains separate from FUNSD and identity fields.
 
 ## Export
 
