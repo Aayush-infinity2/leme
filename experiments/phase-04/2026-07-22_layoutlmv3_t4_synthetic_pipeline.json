@@ -1,0 +1,46 @@
+{
+  "experiment_id": "phase04-layoutlmv3-t4-synthetic-pipeline-20260722",
+  "status": "passed",
+  "scope": "End-to-end LayoutLMv3 training pipeline validation on first-party synthetic data; not a real-world or cross-template benchmark.",
+  "runtime": {
+    "platform": "Google Colab",
+    "gpu": "Tesla T4",
+    "gpu_memory_gb": 14.6,
+    "python": "3.12.13",
+    "torch": "2.13.0+cu126",
+    "transformers": "4.57.6"
+  },
+  "model": {
+    "base_model": "microsoft/layoutlmv3-base",
+    "parameters_million": 125.9,
+    "task": "token_classification",
+    "labels": ["PERSON_NAME", "DOCUMENT_NUMBER", "DATE_OF_BIRTH"],
+    "precision": "fp16",
+    "gradient_checkpointing": false,
+    "reason_gradient_checkpointing_disabled": "LayoutLMv3ForTokenClassification does not support it in the installed Transformers runtime."
+  },
+  "data": {
+    "source": "verivision first-party synthetic layout v1",
+    "samples": 500,
+    "splits": {"train": 400, "validation": 50, "test": 50},
+    "contains_real_pii": false,
+    "known_limitation": "All records use one fictitious template family; results must not be used as a generalization, fairness, calibration, or production-quality claim."
+  },
+  "optimization": {
+    "epochs": 3,
+    "learning_rate": 0.00001,
+    "per_device_train_batch_size": 1,
+    "gradient_accumulation_steps": 8
+  },
+  "results": {
+    "validation_loss_epoch_1": 0.2555200159549713,
+    "validation_loss_epoch_2": 0.06107940524816513,
+    "validation_loss_epoch_3": 0.04360412433743477,
+    "test_loss": 0.043701935559511185,
+    "train_runtime_seconds": 271.2852,
+    "train_samples_per_second": 4.423,
+    "test_runtime_seconds": 3.7373,
+    "test_samples_per_second": 13.379
+  },
+  "next_gate": "Generate multiple held-out template and capture families; report entity micro/macro F1, field exact match, calibration, cross-template transfer, and inference latency before promoting any LayoutLMv3 release."
+}
