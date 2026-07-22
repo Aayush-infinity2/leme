@@ -1,0 +1,24 @@
+{
+  "experiment_id": "phase04-layoutlmv3-t4-template-holdout-20260722",
+  "status": "passed",
+  "scope": "Template-disjoint synthetic transfer validation; not a real-document benchmark.",
+  "runtime": {"platform": "Google Colab", "gpu": "Tesla T4", "gpu_memory_gb": 14.6, "torch": "2.13.0+cu126", "transformers": "4.57.6"},
+  "model": {"base_model": "microsoft/layoutlmv3-base", "task": "token_classification", "precision": "fp16", "gradient_checkpointing": false},
+  "data": {
+    "source": "verivision first-party synthetic layout v2",
+    "samples": 1000,
+    "template_split": {"train": ["amber_spread", "blue_left", "green_compact"], "validation": "slate_bottom", "test": "violet_right"},
+    "splits": {"train": 600, "validation": 200, "test": 200},
+    "capture_conditions": ["clean", "low_contrast", "high_contrast"],
+    "contains_real_pii": false,
+    "known_limitations": ["All templates share a renderer, vocabulary, typography family, entity grammar, and synthetic portrait.", "Perfect entity F1 is expected under this controlled distribution and must not be presented as production accuracy."]
+  },
+  "optimization": {"epochs": 3, "learning_rate": 0.00001, "per_device_train_batch_size": 1, "gradient_accumulation_steps": 8},
+  "results": {
+    "validation": {"epoch_1_loss": 0.08433311432600021, "epoch_1_entity_f1": 1.0, "epoch_2_loss": 0.0280577652156353, "epoch_2_entity_f1": 1.0, "epoch_3_loss": 0.02287382073700428, "epoch_3_entity_f1": 1.0},
+    "test": {"loss": 0.02293161302804947, "entity_precision": 1.0, "entity_recall": 1.0, "entity_f1": 1.0, "runtime_seconds": 14.6782, "samples_per_second": 13.626},
+    "train_runtime_seconds": 419.3587,
+    "train_samples_per_second": 4.292
+  },
+  "next_gate": "Add independent renderer families, OCR noise/box perturbations, multilingual values, held-out field grammars, and approved external/consented data before completing Phase 4 generalization evaluation."
+}
