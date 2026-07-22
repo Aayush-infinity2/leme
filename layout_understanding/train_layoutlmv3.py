@@ -62,7 +62,10 @@ def main():
     run_metadata = {"manifest": str(args.manifest), "samples": len(rows), "splits": {"train": len(train_rows), "validation": len(validation_rows), "test": len(test_rows)}, "seed": args.seed, "labels": LABELS, "scope_warning": "Synthetic single-template pipeline validation only; not a generalization benchmark."}
     args.output_dir.mkdir(parents=True, exist_ok=True)
     (args.output_dir / "run_metadata.json").write_text(json.dumps(run_metadata, indent=2) + "\n", encoding="utf-8")
-    training_args = TrainingArguments(output_dir=str(args.output_dir), learning_rate=1e-5, per_device_train_batch_size=1, per_device_eval_batch_size=1, gradient_accumulation_steps=8, num_train_epochs=args.epochs, fp16=torch.cuda.is_available(), gradient_checkpointing=True, eval_strategy="epoch", save_strategy="epoch", load_best_model_at_end=True, metric_for_best_model="eval_loss", greater_is_better=False, save_total_limit=2, logging_steps=10, report_to="none", seed=args.seed)
+    # LayoutLMv3ForTokenClassification does not implement gradient checkpointing
+    # in the installed Transformers runtime. Batch size 1 plus accumulation keeps
+    # the T4 run memory-safe without enabling an unsupported model feature.
+    training_args = TrainingArguments(output_dir=str(args.output_dir), learning_rate=1e-5, per_device_train_batch_size=1, per_device_eval_batch_size=1, gradient_accumulation_steps=8, num_train_epochs=args.epochs, fp16=torch.cuda.is_available(), eval_strategy="epoch", save_strategy="epoch", load_best_model_at_end=True, metric_for_best_model="eval_loss", greater_is_better=False, save_total_limit=2, logging_steps=10, report_to="none", seed=args.seed)
     trainer = Trainer(model=model, args=training_args, train_dataset=ManifestDataset(train_rows, processor), eval_dataset=ManifestDataset(validation_rows, processor), data_collator=default_data_collator, processing_class=processor)
     trainer.train()
     metrics = trainer.evaluate(ManifestDataset(test_rows, processor), metric_key_prefix="test")
